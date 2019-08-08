@@ -11,13 +11,13 @@ export const scrap = () => fetch(url).then(
   json => normalizeItems(json.items)
 )
 
-const normalizeItems = (items) => items.map(
-  item => ({
-    ...item,
-    category: item.title.split(' ').shift(),
-    price: item.title.split(' - ').pop().split(' ').shift(),
-    published: new Date(item.published),
-    title: item.title.split(' - ').shift().split(' ').slice(1).join(' '),
-    summary: item.summary.content.split('Ajoutée le :').shift()
-  })
-)
+export const normalizeItems = (items) => items.map(normalizeItem)
+
+export const normalizeItem = (item) => ({
+  ...item,
+  category: item.title.split(' ').shift(),
+  price: item.title.split(' - ').pop().split(' ').shift(),
+  published: new Date(item.published),
+  title: item.title.split(' - ').shift().split(' ').slice(1).join(' '),
+  summary: item.summary.content.split('Ajoutée le :').shift()
+})

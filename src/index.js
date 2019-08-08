@@ -1,7 +1,16 @@
 import 'dotenv/config'
 import { scrap } from './annonce-algerie'
-import { insert } from './firebase'
+import { insert, fetchItems } from './firestore'
+import schduler from 'node-schedule'
 
-scrap().then(
-  feed => insert(feed)
-).catch(console.error)
+fetchItems()
+  .then(
+    () => {
+      schduler.scheduleJob('*/1 * * * *', () => {
+        console.log('scraping. ... ')
+        scrap()
+          .then(insert)
+          .catch(console.error)
+      })
+    }
+  )
