@@ -1,4 +1,5 @@
 import fetch from 'node-fetch'
+import _ from 'lodash'
 
 const url = 'https://feedly.com/v3/streams/contents?streamId=feed%2Fhttp%3A%2F%2Fwww.annonce-algerie.com%2Fupload%2Fflux%2Frss_1.xml&count=20000&ranked=newest&similar=true'
 
@@ -13,11 +14,39 @@ export const scrap = () => fetch(url).then(
 
 export const normalizeItems = (items) => items.map(normalizeItem)
 
-export const normalizeItem = (item) => ({
+export const normalizeItem = (item) => _.pick({
   ...item,
-  category: item.title.split(' ').shift(),
+  // category: item.title.split(' ').shift(),
+  // type: item.title.split(' ')[1].replace('.', ''),
+  ...detectType(item.title),
+  wilaya: (item.title.split('à')[1] || '').split(' ')[1],
   price: item.title.split(' - ').pop().split(' ').shift(),
   published: new Date(item.published),
-  title: item.title.split(' - ').shift().split(' ').slice(1).join(' '),
-  summary: item.summary.content.split('Ajoutée le :').shift()
-})
+  title: item.title.split(' - ').shift().split(' ').slice(1).join(' ').replace('.', ''),
+  summary: item.summary.content.split('Ajoutée le :').shift(),
+  surface: (item.summary.content.match(/\d+( )?m/i) || [null])[0],
+  contact: (item.summary.content.match(/0[567]\d{8}/i) || [null])[0]
+
+}, [
+  'id', 'title', 'published', 'summary', 'visual', 'type', 'category', 'wilaya', 'price', 'surface', 'contact'
+])
+
+export function detectType (title = '') {
+// Vente, Echange, Location, Location pour vacances.
+  const category = check(title, [
+    'Vente', 'Echange', 'Location vacances', 'Location'
+  ])
+  const type = check(title, [
+    'Terrain', 'Terrain Agricole', 'Appart', 'Maison'
+  ])
+  return {
+    type, category
+  }
+}
+function check (title, strs) {
+  for (const s of strs) {
+    if (title.includes(s)) {
+      return s
+    }
+  }
+}

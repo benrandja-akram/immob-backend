@@ -2,7 +2,7 @@ import admin from './admin'
 import pascal from 'pascal-case'
 import _ from 'lodash'
 import { notify } from './fcm'
-import { normalizeItems, normalizeItem } from './annonce-algerie'
+import { normalizeItems } from './annonce-algerie'
 
 const db = admin.firestore()
 
