@@ -19,16 +19,16 @@ export const normalizeItem = (item) => _.pick({
   // category: item.title.split(' ').shift(),
   // type: item.title.split(' ')[1].replace('.', ''),
   ...detectType(item.title),
-  wilaya: (item.title.split('à')[1] || '').split(' ')[1],
-  price: item.title.split(' - ').pop().split(' ').shift(),
+  wilaya: (item.title.split('à')[1] || '').split(' ')[1] || null,
+  price: item.title.split(' - ').pop().split(' ').shift() || null,
   published: new Date(item.published),
-  title: item.title.split(' - ').shift().split(' ').slice(1).join(' ').replace('.', ''),
-  summary: item.summary.content.split('Ajoutée le :').shift(),
-  surface: (item.summary.content.match(/\d+( )?m/i) || [null])[0],
-  contact: (item.summary.content.match(/0[567]\d{8}/i) || [null])[0]
-
+  image: (item.visual && ((item.visual.url == 'none') ? null : item.visual.url)) || null,
+  title: item.title.split(' - ').shift().split(' ').slice(1).join(' ').replace('.', '') || null,
+  summary: item.summary.content.split('Ajoutée le :').shift() || null,
+  surface: (item.summary.content.match(/\d+( )?m/i) || [null])[0] || null,
+  contact: (item.summary.content.match(/0[567]\d{8}/i) || [null])[0] || null
 }, [
-  'id', 'title', 'published', 'summary', 'visual', 'type', 'category', 'wilaya', 'price', 'surface', 'contact'
+  'id', 'title', 'published', 'summary', 'image', 'type', 'category', 'wilaya', 'price', 'surface', 'contact'
 ])
 
 export function detectType (title = '') {
@@ -49,4 +49,5 @@ function check (title, strs) {
       return s
     }
   }
+  return null
 }

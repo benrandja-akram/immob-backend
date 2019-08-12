@@ -2,7 +2,6 @@ import admin from './admin'
 import pascal from 'pascal-case'
 import _ from 'lodash'
 import { notify } from './fcm'
-import { normalizeItems } from './annonce-algerie'
 
 const db = admin.firestore()
 
@@ -13,21 +12,20 @@ export const fetchItems = () => new Promise(
     db.collection('annonces')
       .onSnapshot(
         snapshot => {
-          items = normalizeItems(snapshot.docs.map(doc => doc.data()))
+          items = snapshot.docs.map(doc => doc.data())
           resolve(items)
           snapshot.docChanges().forEach(
             change => {
               const doc = change.doc.data()
-              console.log({ doc })
               const body = {
                 id: doc.id,
                 title: doc.title
               }
               if (change.type === 'added') {
-                notify({
-                  title: 'New annonce',
-                  body: doc.title
-                }, body)
+                // notify({
+                //   title: 'New annonce',
+                //   body: doc.title
+                // }, body)
               }
             }
           )
@@ -37,9 +35,11 @@ export const fetchItems = () => new Promise(
 )
 
 export const insert = (docs) => {
-  if (_.differenceBy(docs, items, 'id')) {
+  console.log('processing inserting in prgress')
+  if (!_.differenceBy(docs, items, 'id').length) {
     return console.log('same docs')
   }
+  console.log('inserting new data')
   return Promise.all(
     docs.map(
       doc => db.collection('annonces').doc(pascal(doc.id)).set(doc)

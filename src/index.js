@@ -19,8 +19,8 @@ fetchItems()
       schduler.scheduleJob('*/1 * * * *', () => {
         console.log('scraping. ... ')
         scrap()
-          .then(console.log)
-          // .then(insert)
+          // .then(console.log)
+          .then(insert)
           .catch(console.error)
       })
     }
