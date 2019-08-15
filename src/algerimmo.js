@@ -1,9 +1,8 @@
-import 'dotenv/config'
+// import 'dotenv/config'
 
 import Parser from 'rss-parser'
 import cheerio from 'cheerio'
-import { detectType } from './annonce-algerie'
-import { insert } from './firestore'
+import _ from 'lodash'
 
 const parser = new Parser({
   customFields: {
@@ -12,13 +11,10 @@ const parser = new Parser({
 })
 
 export async function scrap (url, category, type) {
-  // const url = 'https://www.algerimmo.com/rss/' + query
-
   const feed = await parser.parseURL(url)
 
   const items = feed.items.map(
     (element) => {
-      console.log({ element })
       const { link, content, isoDate: published, title, contentSnippet: summary, address, guid: id } = element
       const $ = cheerio.load(content)
       const image = $('img').attr('src') || null
@@ -46,12 +42,6 @@ export async function scrap (url, category, type) {
   return items
 }
 
-scrap().then(
-  items => insert(items)
-).then(
-  _ => console.log('inserted ...')
-)
-
 // const category = check(title, [
 //   'Vente', 'Echange', 'Location vacances', 'Location'
 // ])
@@ -59,7 +49,7 @@ scrap().then(
 //   'Terrain', 'Terrain Agricole', 'Appart', 'Maison'
 // ])
 
-const rss = [
+export const rss = [
   {
     url: 'https://www.algerimmo.com/rss/?category=achat-vente-maison&type=0&location=',
     category: 'Vente',
@@ -92,12 +82,10 @@ const rss = [
   }
 ]
 
-Promise.all(
+export const scrapAll = () => Promise.all(
   rss.map(
     ({ url, category, type }) => scrap(url, category, type)
   )
 ).then(
-  items => items.forEach(
-    item => insert(item)
-  )
+  items => _.flatten(items)
 )

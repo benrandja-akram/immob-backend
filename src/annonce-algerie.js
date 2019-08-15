@@ -16,13 +16,11 @@ export const normalizeItems = (items) => items.map(normalizeItem)
 
 export const normalizeItem = (item) => _.pick({
   ...item,
-  // category: item.title.split(' ').shift(),
-  // type: item.title.split(' ')[1].replace('.', ''),
   ...detectType(item.title),
   wilaya: (item.title.split('à')[1] || '').split(' ')[1] || null,
   price: item.title.split(' - ').pop().split(' ').shift() || null,
   published: new Date(item.published),
-  image: (item.visual && ((item.visual.url == 'none') ? null : item.visual.url)) || null,
+  image: (item.visual && ((item.visual.url === 'none') ? null : item.visual.url)) || null,
   title: item.title.split(' - ').shift().split(' ').slice(1).join(' ').replace('.', '') || null,
   summary: item.summary.content.split('Ajoutée le :').shift() || null,
   surface: (item.summary.content.match(/\d+( )?m/i) || [null])[0] || null,
@@ -32,7 +30,6 @@ export const normalizeItem = (item) => _.pick({
 ])
 
 export function detectType (title = '') {
-// Vente, Echange, Location, Location pour vacances.
   const category = check(title, [
     'Vente', 'Echange', 'Location vacances', 'Location'
   ])
