@@ -45,7 +45,7 @@ export function detectType (title = '') {
 }
 function check (title, strs) {
   for (const s of strs) {
-    if (title.includes(s)) {
+    if (title.toLowerCase().includes(s.toLowerCase())) {
       return s
     }
   }
