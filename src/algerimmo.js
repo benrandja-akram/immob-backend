@@ -3,6 +3,7 @@
 import Parser from 'rss-parser'
 import cheerio from 'cheerio'
 import _ from 'lodash'
+import pascal from 'pascal-case'
 
 const parser = new Parser({
   customFields: {
@@ -19,7 +20,7 @@ export async function scrap (url, category, type) {
       const $ = cheerio.load(content)
       const image = $('img').attr('src') || null
       const item = {
-        id,
+        id: pascal(id),
         image,
         title,
         published: new Date(published),
@@ -89,3 +90,29 @@ export const scrapAll = () => Promise.all(
 ).then(
   items => _.flatten(items)
 )
+
+// address
+// "ouled moussa"
+// category
+// "Vente"
+// contact
+// "05 "
+// id
+// "https://www.algerimmo.com/achat-vente/achat-vente-appartement/appartement-a-vendre-ouled-moussa-f4-2147.htm"
+// image
+// null
+// link
+// "https://www.algerimmo.com/achat-vente/achat-vente-appartement/appartement-a-vendre-ouled-moussa-f4-2147.htm"
+// published
+// November 15, 2018 at 12:05:40 PM UTC+1
+// summary
+// "Je mets a vendre un joli appartement F4 ( 03 chambres + salon et salle à manger.....) + GARAGE de plus de 40 m2 , a ouled moussa cooperative ALI KHODJA ,d'une superficie de 135 m2 spacieuse ,construction anti-sismique ,trés ensoleillée ,deux façades avec des vues degagées ,accès auto route est-ouest facile à 05 minutes ,batiment et endroit trés propre et calme..Adequat pour habitation ou pour une fonction libérale.... j'accepte l'echange par un niveau de villa ( wilaya d'alger coté est) avec rajout d'argent toute proposition sera étudiée."
+// surface
+// "40 m"
+// (string)
+// title
+// "Offre - appartement a vendre ouled moussa f4 - Wilaya de Boumerdès"
+// type
+// "Appart"
+// wilaya
+// "Boumerdès"

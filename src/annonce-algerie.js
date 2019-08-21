@@ -1,5 +1,6 @@
 import fetch from 'node-fetch'
 import _ from 'lodash'
+import pascal from 'pascal-case'
 
 const url = 'https://feedly.com/v3/streams/contents?streamId=feed%2Fhttp%3A%2F%2Fwww.annonce-algerie.com%2Fupload%2Fflux%2Frss_1.xml&count=20000&ranked=newest&similar=true'
 
@@ -16,6 +17,7 @@ export const normalizeItems = (items) => items.map(normalizeItem)
 
 export const normalizeItem = (item) => _.pick({
   ...item,
+  id: pascal(item.id),
   ...detectType(item.title),
   wilaya: (item.title.split('à')[1] || '').split(' ')[1] || null,
   price: item.title.split(' - ').pop().split(' ').shift() || null,
